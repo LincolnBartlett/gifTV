@@ -19,14 +19,14 @@ class App extends Component {
 
   changeTerm(text) {
     this.setState({ text });
-    axios.get(`http://www.reddit.com/r/${this.state.text}.json`).then(res => {
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
   }
 
   componentDidMount() {
-    axios.get(`http://www.reddit.com/r/${this.state.text}.json`).then(res => {
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
