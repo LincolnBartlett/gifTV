@@ -1,19 +1,18 @@
-import './bootstrap/dist/css/theme.css';
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import axios from 'axios';
-import _ from 'lodash';
-import registerServiceWorker from './registerServiceWorker';
-import Screen from './components/Screen';
-import Remote from './components/Remote';
-
+import "./bootstrap/dist/css/theme.css";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import axios from "axios";
+import _ from "lodash";
+import registerServiceWorker from "./registerServiceWorker";
+import Screen from "./components/Screen";
+import Remote from "./components/Remote";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       text: "silentmoviegifs",
-      posts: [],
+      posts: []
     };
   }
 
@@ -30,7 +29,6 @@ class App extends Component {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
-
   }
 
   render() {
@@ -38,14 +36,14 @@ class App extends Component {
       this.changeTerm(term);
     }, 500);
     return (
-        <div className="col-lg-8 col-lg-offset-2"> 
-          <br/>
-          <Screen output={this.state.text} list={this.state.posts} />
-          <Remote onSearchTermChange={throttle} />
-        </div>
+      <div className="container">
+        <br />
+        <Screen output={this.state.text} list={this.state.posts} />
+        <Remote onSearchTermChange={throttle} />
+      </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));
 registerServiceWorker();

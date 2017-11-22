@@ -124,7 +124,10 @@ class Screen extends Component {
 
   render() {
     if (this.state.posts.length > 1) {
-      console.log([this.state.posts[this.state.count].domain, this.state.posts[this.state.count]]);
+      console.log([
+        this.state.posts[this.state.count].domain,
+        this.state.posts[this.state.count]
+      ]);
     }
 
     //switch between content provider and return proper JSX
@@ -141,7 +144,6 @@ class Screen extends Component {
                   </p>
                   <div className="embed-responsive embed-responsive-4by3">
                     <video
-                      
                       autoPlay
                       loop
                       className="embed-responsive-item"

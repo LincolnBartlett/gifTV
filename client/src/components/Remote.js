@@ -1,11 +1,67 @@
 import React, { Component } from "react";
+import Button from "./Button";
 //component for choosing subreddit to watch
 class Remote extends Component {
   constructor(props) {
     super(props);
     this.buttonClick = this.buttonClick.bind(this);
+    this.Random = this.Random.bind(this);
+    this.Science = this.Science.bind(this);
+    this.Gaming = this.Gaming.bind(this);
+    this.Animals = this.Animals.bind(this);
 
-    this.state = { term: "silentmoviegifs" };
+    this.state = {
+      term: "silentmoviegifs",
+      subs: {
+        random: [
+          "gif",
+          "gifs",
+          "gifv",
+          "gfycats",
+          "InterestingGifs",
+          "perfectloops",
+          "BetterEveryLoop",
+          "Cinemagraphs",
+          "gifsthatkeepongiving",
+          "gifextra",
+          "reactiongifs",
+          "StarTrekGifs",
+          "hero0fwar",
+          "HighlightGIFS",
+          "EditingAndLayout",
+          "fullmoviegifs",
+          "gifrecipes",
+          "SuperAthleteGifs",
+          "silentmoviegifs",
+          "hmmmgifs"
+        ],
+        science: [
+          "physicsgifs",
+          "aviationgifs",
+          "spacegifs",
+          "NatureGifs",
+          "mechanical_gifs",
+          "chemicalreactiongifs",
+          "educationalgifs",
+          "MarineBiologyGifs"
+        ],
+        gaming: ["gaminggifs", "GTAgifs", "GamePhysics"],
+        animals: [
+          "zoomies",
+          "tippytaps",
+          "kittengifs",
+          "aww_gifs",
+          "AnimalTextGifs",
+          "BigCatGifs"
+        ]
+      },
+      isHidden: {
+        Random: true,
+        Science: false,
+        Gaming: true,
+        Animals: true
+      }
+    };
   }
 
   onInputChange(term) {
@@ -15,6 +71,30 @@ class Remote extends Component {
 
   buttonClick(term) {
     this.onInputChange(term);
+  }
+
+  Random() {
+    return (
+      <Button buttonClick={this.buttonClick} sub={this.state.subs.random} />
+    );
+  }
+
+  Science() {
+    return (
+      <Button buttonClick={this.buttonClick} sub={this.state.subs.science} />
+    );
+  }
+
+  Gaming() {
+    return (
+      <Button buttonClick={this.buttonClick} sub={this.state.subs.gaming} />
+    );
+  }
+
+  Animals() {
+    return (
+      <Button buttonClick={this.buttonClick} sub={this.state.subs.animals} />
+    );
   }
 
   render() {
@@ -28,270 +108,77 @@ class Remote extends Component {
             onChange={event => this.onInputChange(event.target.value)}
           />
           <hr />
-          <div className="btn-group">
-            <p>Random :</p>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gif")}
-            >
-              /r/GIF
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gifs")}
-            >
-              /r/Gifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default "
-              onClick={event => this.buttonClick("gifv")}
-            >
-              /r/gifv
-            </button>
-
-            <button
-              className="btn btn-sm btn-default "
-              onClick={event => this.buttonClick("gfycats")}
-            >
-              /r/gfycats
-            </button>
-
-            <button
-              className="btn btn-sm btn-default "
-              onClick={event => this.buttonClick("InterestingGifs")}
-            >
-              /r/InterestingGifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default "
-              onClick={event => this.buttonClick("perfectloops")}
-            >
-              /r/perfectloops
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("BetterEveryLoop")}
-            >
-              /r/BetterEveryLoop
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("Cinemagraphs")}
-            >
-              /r/Cinemagraphs
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gifsthatkeepongiving")}
-            >
-              /r/gifsthatkeepongiving
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gifextra")}
-            >
-              /r/gifextra
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("reactiongifs")}
-            >
-              /r/reactiongifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("StarTrekGifs")}
-            >
-              /r/StarTrekGifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("hero0fwar")}
-            >
-              /r/hero0fwar
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("HighlightGIFS")}
-            >
-              /r/HighlightGIFS
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("EditingAndLayout")}
-            >
-              /r/EditingAndLayout
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("fullmoviegifs")}
-            >
-              /r/FullMovieGifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gifrecipes")}
-            >
-              /r/GifRecipes
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("SuperAthleteGifs")}
-            >
-              /r/SuperAthleteGifs
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("silentmoviegifs")}
-            >
-              /r/silentmoviegifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("hmmmgifs")}
-            >
-              /r/hmmmgifs
-            </button>
-
-          </div>
-          <div className="btn-group">
-            <p>Science :</p>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("physicsgifs")}
-            >
-              /r/physicsgifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("aviationgifs")}
-            >
-              /r/AviationGifs
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("spacegifs")}
-            >
-              /r/spacegifs
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("NatureGifs")}
-            >
-              /r/NatureGifs
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("mechanical_gifs")}
-            >
-              /r/mechanical_gifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("chemicalreactiongifs")}
-            >
-              /r/chemicalreactiongifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("educationalgifs")}
-            >
-              /r/educationalgifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("MarineBiologyGifs")}
-            >
-              /r/MarineBiologyGifs
-            </button>
-          </div>
-          <div className="btn-group">
-            <p>Gaming :</p>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("gaminggifs")}
-            >
-              /r/gaminggifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("GTAgifs")}
-            >
-              /r/GTAgifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("GamePhysics")}
-            >
-              /r/GamePhysics
-            </button>
-
-          </div>
-          <div className="btn-group">
-            <p>Animals :</p>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("zoomies")}
-            >
-              /r/zoomies
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("tippytaps")}
-            >
-              /r/TippyTaps
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("kittengifs")}
-            >
-              /r/kittengifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("aww_gifs")}
-            >
-              /r/aww_gifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("AnimalTextGifs")}
-            >
-              /r/AnimalTextGifs
-            </button>
-
-            <button
-              className="btn btn-sm btn-default"
-              onClick={event => this.buttonClick("BigCatGifs")}
-            >
-              /r/BigCatGifs
-            </button>
-          </div>
+          <ul className="nav nav-pills nav-justified">
+            <li>
+              <a
+                className="btn btn-sm btn-default"
+                onClick={event =>
+                  this.setState({
+                    isHidden: {
+                      Random: false,
+                      Science: true,
+                      Gaming: true,
+                      Animals: true
+                    }
+                  })}
+              >
+                Random
+              </a>
+            </li>
+            <li>
+              <a
+                className="btn btn-sm btn-default"
+                onClick={event =>
+                  this.setState({
+                    isHidden: {
+                      Random: true,
+                      Science: false,
+                      Gaming: true,
+                      Animals: true
+                    }
+                  })}
+              >
+                Science
+              </a>
+            </li>
+            <li>
+              <a
+                className="btn btn-sm  btn-default"
+                onClick={event =>
+                  this.setState({
+                    isHidden: {
+                      Random: true,
+                      Science: true,
+                      Gaming: false,
+                      Animals: true
+                    }
+                  })}
+              >
+                Gaming
+              </a>
+            </li>
+            <li>
+              <a
+                className="btn btn-sm  btn-default"
+                onClick={event =>
+                  this.setState({
+                    isHidden: {
+                      Random: true,
+                      Science: true,
+                      Gaming: true,
+                      Animals: false
+                    }
+                  })}
+              >
+                Animals
+              </a>
+            </li>
+          </ul>
+          <br />
+          {!this.state.isHidden.Random && <this.Random />}
+          {!this.state.isHidden.Science && <this.Science />}
+          {!this.state.isHidden.Gaming && <this.Gaming />}
+          {!this.state.isHidden.Animals && <this.Animals />}
         </div>
       </div>
     );
