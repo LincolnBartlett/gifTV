@@ -100,92 +100,86 @@ class Remote extends Component {
   render() {
     return (
       <div className="col-lg-4">
-      <div className="panel panel-default">
-        <div className="panel-heading">
+
+        <div className="panel panel-default">
+          <div className="panel-heading">
           <h1 className="text-center">gifTV</h1>
-          <h5 className="text-right">Watching: r/{this.state.term}</h5>
-          <br />
-          <h4>Type a subreddit: </h4>
-          <input
-            className="form-control"
-            value={this.state.term}
-            onChange={event => this.onInputChange(event.target.value)}
-          />
-          <br />
-          <ul className="nav nav-pills nav-justified">
-            <li>
-              <a
-                className="btn btn-sm btn-default"
-                onClick={event =>
-                  this.setState({
-                    isHidden: {
-                      Random: false,
-                      Science: true,
-                      Gaming: true,
-                      Animals: true
-                    }
-                  })}
-              >
-                Random
-              </a>
-            </li>
-            <li>
-              <a
-                className="btn btn-sm btn-default"
-                onClick={event =>
-                  this.setState({
-                    isHidden: {
-                      Random: true,
-                      Science: false,
-                      Gaming: true,
-                      Animals: true
-                    }
-                  })}
-              >
-                Science
-              </a>
-            </li>
-            <li>
-              <a
-                className="btn btn-sm  btn-default"
-                onClick={event =>
-                  this.setState({
-                    isHidden: {
-                      Random: true,
-                      Science: true,
-                      Gaming: false,
-                      Animals: true
-                    }
-                  })}
-              >
-                Gaming
-              </a>
-            </li>
-            <li>
-              <a
-                className="btn btn-sm  btn-default"
-                onClick={event =>
-                  this.setState({
-                    isHidden: {
-                      Random: true,
-                      Science: true,
-                      Gaming: true,
-                      Animals: false
-                    }
-                  })}
-              >
-                Animals
-              </a>
-            </li>
-          </ul>
+        <h5 className="text-right">Watching: r/{this.state.term}</h5>
+            <br />
+            <div className="btn-group btn-group-justified">
+            <a
+              className="btn btn-default"
+              onClick={event =>
+                this.setState({
+                  isHidden: {
+                    Random: false,
+                    Science: true,
+                    Gaming: true,
+                    Animals: true
+                  }
+                })
+              }
+            > Random </a>
+            <a
+              className="btn btn-default"
+              onClick={event =>
+                this.setState({
+                  isHidden: {
+                    Random: true,
+                    Science: false,
+                    Gaming: true,
+                    Animals: true
+                  }
+                })
+              }
+            > Science </a>
+            <a
+              className="btn btn-default"
+              onClick={event =>
+                this.setState({
+                  isHidden: {
+                    Random: true,
+                    Science: true,
+                    Gaming: false,
+                    Animals: true
+                  }
+                })
+              }
+            > Gaming </a>
+            <a
+              className="btn btn-default"
+              onClick={event =>
+                this.setState({
+                  isHidden: {
+                    Random: true,
+                    Science: true,
+                    Gaming: true,
+                    Animals: false
+                  }
+                })
+              }
+            > Animals </a>
+          </div>
+          <br/>
+            {!this.state.isHidden.Random && <this.Random />}
+            {!this.state.isHidden.Science && <this.Science />}
+            {!this.state.isHidden.Gaming && <this.Gaming />}
+            {!this.state.isHidden.Animals && <this.Animals />}
+          </div>
+          
+         
+          <div className="panel-footer">
+          <h4>Enter a subreddit: </h4>
+            <input
+              className="form-control"
+              value={this.state.term}
+              onChange={event => this.onInputChange(event.target.value)}
+            />
+
+          </div>
+
+
         </div>
-        <div className="panel-footer">
-          {!this.state.isHidden.Random && <this.Random />}
-          {!this.state.isHidden.Science && <this.Science />}
-          {!this.state.isHidden.Gaming && <this.Gaming />}
-          {!this.state.isHidden.Animals && <this.Animals />}
-        </div>
-      </div>
       </div>
     );
   }

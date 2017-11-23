@@ -1,4 +1,5 @@
-import "./bootstrap/dist/css/theme.css";
+import "./style/bootstrap/css/theme.css";
+import "./style/custom.css";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
@@ -10,22 +11,30 @@ import Remote from "./components/Remote";
 class App extends Component {
   constructor(props) {
     super(props);
+    this.nextPage = this.nextPage.bind(this);
     this.state = {
       text: "physicsgifs",
       posts: []
     };
   }
 
-  changeTerm(text) {
-    this.setState({ text });
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json`).then(res => {
+  componentDidMount() {
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=100&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
-      this.setState({ posts });
+      this.setState({posts});
     });
   }
 
-  componentDidMount() {
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json`).then(res => {
+  changeTerm(text) {
+    this.setState({ text });
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=100&/`).then(res => {
+      const posts = res.data.data.children.map(obj => obj.data);
+      this.setState({posts});
+    });
+  }
+
+  nextPage(subreddit, postname){
+    axios.get(`https://www.reddit.com/r/${subreddit}.json?limit=100&after=${postname}&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
@@ -39,8 +48,12 @@ class App extends Component {
       <div className="container">
         <div className="row">
         <br />
-        <Screen output={this.state.text} list={this.state.posts} />
-        <Remote onSearchTermChange={throttle} />
+        <Screen 
+          output={this.state.text}
+          list={this.state.posts} 
+          nextPage={this.nextPage}/>
+        <Remote 
+          onSearchTermChange={throttle}/>
         </div>
       </div>
     );

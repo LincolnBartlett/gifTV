@@ -12,11 +12,13 @@ class Screen extends Component {
     this.Iframe = this.Iframe.bind(this);
     this.state = {
       posts: [{ selftext: "" }],
-      count: 0
+      count: 0,
+      sub: ""
     };
   }
 
   componentWillReceiveProps(nextProps) {
+    // console.log(nextProps.output, nextProps.list);
     if (nextProps !== this.props) {
       //if the URL needs to be changed it's done here
       if (nextProps) {
@@ -88,7 +90,7 @@ class Screen extends Component {
     }
   }
 
-  //buttons to switch between gifs
+  //buttons to switch between gifs by changing this.state.count
   nextPost() {
     let add = this.state.count;
     if (add < this.state.posts.length) {
@@ -97,6 +99,9 @@ class Screen extends Component {
     }
     if (add === this.state.posts.length) {
       add = 0;
+      const postName = this.state.posts[this.state.posts.length - 1].name;
+      const subreddit = this.props.output;
+      this.props.nextPage(subreddit, postName);
       this.setState({ count: add });
     }
   }
@@ -130,13 +135,11 @@ class Screen extends Component {
 
   Image() {
     return (
-      <div className="embed-responsive embed-responsive-4by3">
-        <img
-          className="img-responsive"
-          src={this.state.posts[this.state.count].url}
-          alt="gifTV"
-        />
-      </div>
+      <img
+        className="fit-image"
+        src={this.state.posts[this.state.count].url}
+        alt="gifTV"
+      />
     );
   }
 
@@ -154,6 +157,11 @@ class Screen extends Component {
   }
 
   render() {
+
+    // if (this.state.posts[this.state.count].domain !== undefined) {
+    //   console.log(this.state.count, this.state.posts[this.state.count].domain);
+    // }
+
     //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
       //Video Embed
@@ -171,12 +179,10 @@ class Screen extends Component {
                   to r/{this.state.posts[this.state.count].subreddit}
                 </p>
               </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
+              <this.Video />
+              <div className="panel-footer">
                 <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
-              <this.Video />
             </div>
           </div>
         );
@@ -197,12 +203,10 @@ class Screen extends Component {
                   to r/{this.state.posts[this.state.count].subreddit}
                 </p>
               </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
+              <this.Image />
+              <div className="panel-footer">
                 <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
-              <this.Image />
             </div>
           </div>
         );
@@ -224,12 +228,10 @@ class Screen extends Component {
                   to r/{this.state.posts[this.state.count].subreddit}
                 </p>
               </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
+              <this.Iframe />
+              <div className="panel-footer">
                 <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
-              <this.Iframe />
             </div>
           </div>
         );
@@ -246,15 +248,13 @@ class Screen extends Component {
                   to r/{this.state.posts[this.state.count].subreddit}
                 </p>
               </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
               <ReactMarkdown
                 source={this.state.posts[this.state.count].selftext}
               />
             </div>
+            <div className="panel-footer">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
+              </div>
           </div>
         );
 
@@ -270,17 +270,16 @@ class Screen extends Component {
                   to r/{this.state.posts[this.state.count].subreddit}
                 </p>
               </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
-              <div className="panel-body">
+              Sorry source not supported
+              <div className="embed-responsive embed-responsive-4by3">
                 <img
-                  className="img-responsive"
+                  className="fit-image"
                   src={this.state.posts[this.state.count].thumbnail}
                   alt="gifTV"
                 />
+              </div>
+              <div className="panel-footer">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
             </div>
           </div>
