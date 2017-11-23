@@ -1,6 +1,6 @@
 import React from "react";
 
-const Button = props => {
+const Buttons = props => {
   const subButtons = props.sub.map(sub => {
     return (
         <button
@@ -15,4 +15,4 @@ const Button = props => {
   return <div>{subButtons}</div>;
 };
 
-export default Button;
+export default Buttons;

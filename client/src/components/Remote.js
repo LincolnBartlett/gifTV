@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Button from "./Button";
+import Buttons from "./Buttons";
 //component for choosing subreddit to watch
 class Remote extends Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class Remote extends Component {
     this.Animals = this.Animals.bind(this);
 
     this.state = {
-      term: "silentmoviegifs",
+      term: "physicsgifs",
       subs: {
         random: [
           "gif",
@@ -75,39 +75,43 @@ class Remote extends Component {
 
   Random() {
     return (
-      <Button buttonClick={this.buttonClick} sub={this.state.subs.random} />
+      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.random} />
     );
   }
 
   Science() {
     return (
-      <Button buttonClick={this.buttonClick} sub={this.state.subs.science} />
+      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.science} />
     );
   }
 
   Gaming() {
     return (
-      <Button buttonClick={this.buttonClick} sub={this.state.subs.gaming} />
+      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.gaming} />
     );
   }
 
   Animals() {
     return (
-      <Button buttonClick={this.buttonClick} sub={this.state.subs.animals} />
+      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.animals} />
     );
   }
 
   render() {
     return (
-      <div className="col-lg-4 panel panel-default">
-        <div className="panel-body">
-          <h3>Type a subreddit: </h3>
+      <div className="col-lg-4">
+      <div className="panel panel-default">
+        <div className="panel-heading">
+          <h1 className="text-center">gifTV</h1>
+          <h5 className="text-right">Watching: r/{this.state.term}</h5>
+          <br />
+          <h4>Type a subreddit: </h4>
           <input
             className="form-control"
             value={this.state.term}
             onChange={event => this.onInputChange(event.target.value)}
           />
-          <hr />
+          <br />
           <ul className="nav nav-pills nav-justified">
             <li>
               <a
@@ -174,12 +178,14 @@ class Remote extends Component {
               </a>
             </li>
           </ul>
-          <br />
+        </div>
+        <div className="panel-footer">
           {!this.state.isHidden.Random && <this.Random />}
           {!this.state.isHidden.Science && <this.Science />}
           {!this.state.isHidden.Gaming && <this.Gaming />}
           {!this.state.isHidden.Animals && <this.Animals />}
         </div>
+      </div>
       </div>
     );
   }

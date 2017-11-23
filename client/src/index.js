@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: "silentmoviegifs",
+      text: "physicsgifs",
       posts: []
     };
   }
@@ -37,9 +37,11 @@ class App extends Component {
     }, 500);
     return (
       <div className="container">
+        <div className="row">
         <br />
         <Screen output={this.state.text} list={this.state.posts} />
         <Remote onSearchTermChange={throttle} />
+        </div>
       </div>
     );
   }

@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
+import Selectors from "./Selectors";
 
-//component for showing gifs
 class Screen extends Component {
   constructor(props) {
     super(props);
     this.nextPost = this.nextPost.bind(this);
     this.lastPost = this.lastPost.bind(this);
+    this.Video = this.Video.bind(this);
+    this.Image = this.Image.bind(this);
+    this.Iframe = this.Iframe.bind(this);
     this.state = {
       posts: [{ selftext: "" }],
       count: 0
@@ -14,7 +17,6 @@ class Screen extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps !== this.props) {
       //if the URL needs to be changed it's done here
       if (nextProps) {
@@ -51,17 +53,7 @@ class Screen extends Component {
               break;
 
             case "youtube.com":
-              post.url = `https://www.youtube.com/embed/${post.url.slice(
-                post.url.length - 11
-              )}`;
-              break;
-
             case "m.youtube.com":
-              post.url = `https://www.youtube.com/embed/${post.url.slice(
-                post.url.length - 11
-              )}`;
-              break;
-
             case "youtu.be":
               post.url = `https://www.youtube.com/embed/${post.url.slice(
                 post.url.length - 11
@@ -69,10 +61,10 @@ class Screen extends Component {
               break;
 
             case "v.redd.it":
-              if (!post.media) {
-                post.media = {
-                  reddit_video: { fallback_url: post.url + "/DASH_4_8_M" }
-                };
+              if (post.media) {
+                post.url = post.media.reddit_video.fallback_url;
+              } else {
+                post.url = post.url + "/DASH_4_8_M";
               }
               break;
 
@@ -122,590 +114,173 @@ class Screen extends Component {
     }
   }
 
-  render() {
-    if (this.state.posts.length > 1) {
-      console.log([
-        this.state.posts[this.state.count].domain,
-        this.state.posts[this.state.count]
-      ]);
-    }
+  Video() {
+    return (
+      <div className="embed-responsive embed-responsive-4by3">
+        <video
+          className="embed-responsive-item"
+          src={this.state.posts[this.state.count].url}
+          autoPlay
+          loop
+          title="gifTV"
+        />
+      </div>
+    );
+  }
 
+  Image() {
+    return (
+      <div className="embed-responsive embed-responsive-4by3">
+        <img
+          className="img-responsive"
+          src={this.state.posts[this.state.count].url}
+          alt="gifTV"
+        />
+      </div>
+    );
+  }
+
+  Iframe() {
+    return (
+      <div className="embed-responsive embed-responsive-4by3">
+        <iframe
+          className="embed-responsive-item"
+          src={this.state.posts[this.state.count].url}
+          scrolling="no"
+          title="gifTV"
+        />
+      </div>
+    );
+  }
+
+  render() {
     //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
+      //Video Embed
       case "i.imgur.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <video
-                      autoPlay
-                      loop
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "i.redd.it":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <img
-                    className="img-responsive"
-                    src={this.state.posts[this.state.count].url}
-                    alt="gifTV"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "i.giphy.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <img
-                    className="img-responsive"
-                    src={this.state.posts[this.state.count].url}
-                    alt="gifTV"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
+      case "giant.gfycat.com":
       case "v.redd.it":
         return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <video
-                      type="video/webm"
-                      autoPlay
-                      loop
-                      className="embed-responsive-item"
-                      src={
-                        this.state.posts[this.state.count].media.reddit_video
-                          .fallback_url
-                      }
-                    />
-                  </div>
-                </div>
+          <div className="col-lg-8 text-center">
+            <div className="panel panel-default">
+              <div className="panel-body">
+                <h3>{this.state.posts[this.state.count].title}</h3>
+                <p className="text-right">
+                  Submitted by /u/{this.state.posts[this.state.count].author}
+                  <br />
+                  to r/{this.state.posts[this.state.count].subreddit}
+                </p>
               </div>
             </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
+              <this.Video />
             </div>
           </div>
         );
 
-      case "m.youtube.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <iframe
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      scrolling="no"
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "youtube.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <iframe
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      scrolling="no"
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      case "youtu.be":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <iframe
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      scrolling="no"
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "gfycat.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <iframe
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      scrolling="no"
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "giant.gfycat.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <video
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      autoPlay
-                      loop
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
-      case "giphy.com":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <iframe
-                      className="embed-responsive-item"
-                      src={this.state.posts[this.state.count].url}
-                      scrolling="no"
-                      title="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
+      //Image Embed
+      case "i.redd.it":
+      case "i.giphy.com":
       case "gph.is":
-        return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <img
-                      className="img-responsive"
-                      src={this.state.posts[this.state.count].url}
-                      alt="gifTV"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-
       case "media.giphy.com":
         return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <img
-                      className="img-responsive"
-                      src={this.state.posts[this.state.count].url}
-                      alt="gifTV"
-                    />
-                  </div>
-                </div>
+          <div className="col-lg-8 text-center">
+            <div className="panel panel-default">
+              <div className="panel-body">
+                <h3>{this.state.posts[this.state.count].title}</h3>
+                <p className="text-right">
+                  Submitted by /u/{this.state.posts[this.state.count].author}
+                  <br />
+                  to r/{this.state.posts[this.state.count].subreddit}
+                </p>
               </div>
             </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
+              <this.Image />
+            </div>
+          </div>
+        );
+
+      //iFrame Embed
+      case "youtube.com":
+      case "m.youtube.com":
+      case "youtu.be":
+      case "gfycat.com":
+      case "giphy.com":
+        return (
+          <div className="col-lg-8 text-center">
+            <div className="panel panel-default">
+              <div className="panel-body">
+                <h3>{this.state.posts[this.state.count].title}</h3>
+                <p className="text-right">
+                  Submitted by /u/{this.state.posts[this.state.count].author}
+                  <br />
+                  to r/{this.state.posts[this.state.count].subreddit}
+                </p>
+              </div>
+            </div>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
+              </div>
+              <this.Iframe />
             </div>
           </div>
         );
 
       case "self":
         return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-
-                  <ReactMarkdown
-                    source={this.state.posts[this.state.count].selftext}
-                  />
-                </div>
+          <div className="col-lg-8 text-center">
+            <div className="panel panel-default">
+              <div className="panel-body">
+                <h3>{this.state.posts[this.state.count].title}</h3>
+                <p className="text-right">
+                  Submitted by /u/{this.state.posts[this.state.count].author}
+                  <br />
+                  to r/{this.state.posts[this.state.count].subreddit}
+                </p>
               </div>
             </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
               </div>
+              <ReactMarkdown
+                source={this.state.posts[this.state.count].selftext}
+              />
             </div>
           </div>
         );
 
       default:
         return (
-          <div>
-            <div className="col-lg-8 ">
-              <div className="panel panel-default">
-                <div className="panel-body">
-                  <h2>{this.state.posts[this.state.count].title}</h2>
-                  <p className="text-right">
-                    Submitted by /u/{this.state.posts[this.state.count].author}
-                  </p>
-                  <h2> Sorry, Source not currently supported. </h2>
-                  <img
-                    className="img-responsive"
-                    src={this.state.posts[this.state.count].thumbnail}
-                    alt="gifTV"
-                  />
-                </div>
+          <div className="col-lg-8 text-center">
+            <div className="panel panel-default">
+              <div className="panel-body">
+                <h3>{this.state.posts[this.state.count].title}</h3>
+                <p className="text-right">
+                  Submitted by /u/{this.state.posts[this.state.count].author}
+                  <br />
+                  to r/{this.state.posts[this.state.count].subreddit}
+                </p>
               </div>
             </div>
-            <div className="col-lg-4 panel panel-default">
-              <div className="panel-body text-center">
-                <h1>gifTV</h1>
-                <p>r/{this.state.posts[this.state.count].subreddit}</p>
-                <button onClick={this.lastPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-backward"
-                    aria-hidden="true"
-                  />
-                </button>
-                <button onClick={this.nextPost} className="btn btn-lg btn-info">
-                  <span
-                    className="glyphicon glyphicon glyphicon-step-forward"
-                    aria-hidden="true"
-                  />
-                </button>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
+              </div>
+              <div className="panel-body">
+                <img
+                  className="img-responsive"
+                  src={this.state.posts[this.state.count].thumbnail}
+                  alt="gifTV"
+                />
               </div>
             </div>
           </div>
