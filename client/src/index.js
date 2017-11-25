@@ -19,7 +19,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=100&/`).then(res => {
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=50&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({posts});
     });
@@ -27,14 +27,14 @@ class App extends Component {
 
   changeTerm(text) {
     this.setState({ text });
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=100&/`).then(res => {
+    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=50&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({posts});
     });
   }
 
   nextPage(subreddit, postname){
-    axios.get(`https://www.reddit.com/r/${subreddit}.json?limit=100&after=${postname}&/`).then(res => {
+    axios.get(`https://www.reddit.com/r/${subreddit}.json?limit=50&after=${postname}&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
@@ -48,12 +48,16 @@ class App extends Component {
       <div className="container">
         <div className="row">
         <br />
-        <Screen 
+        <div className="col-lg-8">
+        <Screen
           output={this.state.text}
           list={this.state.posts} 
           nextPage={this.nextPage}/>
-        <Remote 
+          </div>
+          <div className="col-lg-4">
+        <Remote          
           onSearchTermChange={throttle}/>
+          </div>
         </div>
       </div>
     );
