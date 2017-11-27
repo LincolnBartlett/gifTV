@@ -11,7 +11,7 @@ class Remote extends Component {
     this.Animals = this.Animals.bind(this);
 
     this.state = {
-      term: "physicsgifs",
+      term: "BetterEveryLoop",
       subs: {
         random: [
           "gif",

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
 import Selectors from "./Selectors";
-
 import axios from "axios";
 
 class Screen extends Component {
@@ -14,6 +13,10 @@ class Screen extends Component {
     this.Iframe = this.Iframe.bind(this);
     this.getComments = this.getComments.bind(this);
     this.ShowComments = this.ShowComments.bind(this);
+    this.TopPanel = this.TopPanel.bind(this);
+    this.BottomPanel = this.BottomPanel.bind(this);
+    this.CommentButton = this.CommentButton.bind(this);
+
     this.state = {
       posts: [{ selftext: "" }],
       count: 0,
@@ -126,42 +129,95 @@ class Screen extends Component {
     }
   }
 
+  //Component rendering functions
+
+  TopPanel(){
+    return (
+      <div className="panel-heading">
+        <div className="row">
+          <div className="col-xs-8 text-left">
+            <a
+              target="_blank"
+              href={
+                "https://www.reddit.com/" +
+                this.state.posts[this.state.count].permalink
+              }
+            >
+              <h3>{this.state.posts[this.state.count].title}</h3>
+            </a>
+          </div>
+          <Selectors
+            lastPost={this.lastPost}
+            nextPost={this.nextPost}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  BottomPanel(){
+    return(
+      <div className="panel-footer">
+      <p className="text-right">
+      Submitted by: <a target="_blank" href={"https://www.reddit.com/u/" + this.state.posts[this.state.count].author}>u/{this.state.posts[this.state.count].author}</a>
+        <br />
+      to: <a target="_blank" href={"https://www.reddit.com/r/" + this.state.posts[this.state.count].subreddit}>r/{this.state.posts[this.state.count].subreddit}</a>
+      </p>
+    </div>
+    );
+  }
+
   Video() {
     return (
-      <div className="embed-responsive embed-responsive-4by3">
-        <video
-          className="embed-responsive-item"
-          src={this.state.posts[this.state.count].url}
-          autoPlay
-          loop
-          title="gifTV"
-        />
-      </div>
+      <div className="panel panel-default">
+        <this.TopPanel />
+        <div className="embed-responsive embed-responsive-4by3">
+          <video
+            className="embed-responsive-item"
+            src={this.state.posts[this.state.count].url}
+            autoPlay
+            loop
+            title="gifTV"
+          />
+        </div>
+        <this.BottomPanel />
+    </div>
+
     );
   }
 
   Image() {
     return (
-      <img
-        className="fit-image"
-        src={this.state.posts[this.state.count].url}
-        alt="gifTV"
-      />
+      <div className="panel panel-default">
+        <this.TopPanel />
+        <img
+          className="fit-image"
+          src={this.state.posts[this.state.count].url}
+          alt="gifTV"
+        />
+        <this.BottomPanel />
+      </div>
     );
   }
 
   Iframe() {
     return (
-      <div className="embed-responsive embed-responsive-4by3">
-        <iframe
-          className="embed-responsive-item"
-          src={this.state.posts[this.state.count].url}
-          scrolling="no"
-          title="gifTV"
-        />
+      <div className="panel panel-default">
+        <this.TopPanel />
+        <div className="embed-responsive embed-responsive-4by3">
+          <iframe
+            className="embed-responsive-item"
+            src={this.state.posts[this.state.count].url}
+            scrolling="no"
+            title="gifTV"
+          />
+        </div>
+        <this.BottomPanel />
       </div>
     );
   }
+
+  // Comment handling
 
   getComments() {
     axios
@@ -180,6 +236,33 @@ class Screen extends Component {
       });
   }
 
+  CommentButton(){
+    return(
+      <div className="panel panel-default">
+        <div className="panel-body">
+          {this.state.isHidden.comments && (
+            <button
+              className="btn btn-lg btn-block btn-primary"
+              onClick={event => this.getComments()}
+            >
+              Show Comments
+            </button>
+          )}
+          {!this.state.isHidden.comments && (
+            <button
+              className="btn btn-lg btn-block btn-primary"
+              onClick={event =>
+                this.setState({ isHidden: { comments: true } })
+              }
+            >
+              Hide Comments
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   ShowComments() {
     const posts = this.state.comments.map(post => {
       let child = <div />;
@@ -194,7 +277,7 @@ class Screen extends Component {
                     <p>
                       {child2Post.data.score} u/{child2Post.data.author}:
                     </p>
-                    <hr />                 
+                    <hr />
                     <ReactMarkdown source={child2Post.data.body} />
                   </div>
                 </div>
@@ -219,7 +302,7 @@ class Screen extends Component {
 
       return (
         <div className="panel panel-default">
-          <div key={post.id}  className="panel-body">
+          <div key={post.id} className="panel-body">
             <p>
               {post.score} u/{post.author}:
             </p>
@@ -237,53 +320,20 @@ class Screen extends Component {
 
   render() {
     // if (this.state.posts[this.state.count].domain !== undefined) {
-    //   console.log(this.state.count, this.state.posts[this.state.count].domain);
+    //   console.log(this.state.count, this.state.posts[this.state.count]);
     // }
 
     //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
+
       //Video Embed
       case "i.imgur.com":
       case "giant.gfycat.com":
       case "v.redd.it":
         return (
           <div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                <h3>{this.state.posts[this.state.count].title}</h3>
-                <p className="text-right">
-                  Submitted by /u/{this.state.posts[this.state.count].author}
-                  <br />
-                  to r/{this.state.posts[this.state.count].subreddit}
-                </p>
-              </div>
-              <this.Video />
-              <div className="panel-footer">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                {this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event => this.getComments()}
-                  >
-                    Show Comments
-                  </button>
-                )}
-                {!this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event =>
-                      this.setState({ isHidden: { comments: true } })
-                    }
-                  >
-                    Hide Comments
-                  </button>
-                )}
-              </div>
-            </div>
+            <this.Video />
+            <this.CommentButton />
             {!this.state.isHidden.comments && <this.ShowComments />}
           </div>
         );
@@ -295,42 +345,8 @@ class Screen extends Component {
       case "media.giphy.com":
         return (
           <div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                <h3>{this.state.posts[this.state.count].title}</h3>
-                <p className="text-right">
-                  Submitted by /u/{this.state.posts[this.state.count].author}
-                  <br />
-                  to r/{this.state.posts[this.state.count].subreddit}
-                </p>
-              </div>
-              <this.Image />
-              <div className="panel-footer">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                {this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event => this.getComments()}
-                  >
-                    Show Comments
-                  </button>
-                )}
-                {!this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event =>
-                      this.setState({ isHidden: { comments: true } })
-                    }
-                  >
-                    Hide Comments
-                  </button>
-                )}
-              </div>
-            </div>
+            <this.Image />
+            <this.CommentButton />
             {!this.state.isHidden.comments && <this.ShowComments />}
           </div>
         );
@@ -343,42 +359,8 @@ class Screen extends Component {
       case "giphy.com":
         return (
           <div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                <h3>{this.state.posts[this.state.count].title}</h3>
-                <p className="text-right">
-                  Submitted by /u/{this.state.posts[this.state.count].author}
-                  <br />
-                  to r/{this.state.posts[this.state.count].subreddit}
-                </p>
-              </div>
-              <this.Iframe />
-              <div className="panel-footer">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                {this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event => this.getComments()}
-                  >
-                    Show Comments
-                  </button>
-                )}
-                {!this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event =>
-                      this.setState({ isHidden: { comments: true } })
-                    }
-                  >
-                    Hide Comments
-                  </button>
-                )}
-              </div>
-            </div>
+            <this.Iframe />
+            <this.CommentButton />
             {!this.state.isHidden.comments && <this.ShowComments />}
           </div>
         );
@@ -387,43 +369,16 @@ class Screen extends Component {
         return (
           <div>
             <div className="panel panel-default">
-              <div className="panel-body">
-                <h3>{this.state.posts[this.state.count].title}</h3>
-                <p className="text-right">
-                  Submitted by /u/{this.state.posts[this.state.count].author}
-                  <br />
-                  to r/{this.state.posts[this.state.count].subreddit}
-                </p>
-              </div>
-              <ReactMarkdown
-                source={this.state.posts[this.state.count].selftext}
-              />
-              <div className="panel-footer">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
+                <this.TopPanel />        
+                <div className="panel-body">
+                  <ReactMarkdown
+                    source={this.state.posts[this.state.count].selftext}
+                  />
+                </div>
+                <this.BottomPanel />
+              
             </div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                {this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event => this.getComments()}
-                  >
-                    Show Comments
-                  </button>
-                )}
-                {!this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event =>
-                      this.setState({ isHidden: { comments: true } })
-                    }
-                  >
-                    Hide Comments
-                  </button>
-                )}
-              </div>
-            </div>
+            <this.CommentButton />
             {!this.state.isHidden.comments && <this.ShowComments />}
           </div>
         );
@@ -432,48 +387,20 @@ class Screen extends Component {
         return (
           <div>
             <div className="panel panel-default">
-              <div className="panel-body">
-                <h3>{this.state.posts[this.state.count].title}</h3>
-                <p className="text-right">
-                  Submitted by /u/{this.state.posts[this.state.count].author}
-                  <br />
-                  to r/{this.state.posts[this.state.count].subreddit}
-                </p>
-              </div>
-              Sorry source not supported
-              <div className="embed-responsive embed-responsive-4by3">
-                <img
-                  className="fit-image"
-                  src={this.state.posts[this.state.count].thumbnail}
-                  alt="gifTV"
-                />
-              </div>
-              <div className="panel-footer">
-                <Selectors lastPost={this.lastPost} nextPost={this.nextPost} />
-              </div>
+              <this.TopPanel />
+                <div className="panel-body">
+                  Sorry source not supported
+                  <div className="embed-responsive embed-responsive-4by3">
+                    <img
+                      className="fit-image"
+                      src={this.state.posts[this.state.count].thumbnail}
+                      alt="gifTV"
+                    />
+                  </div>
+                </div>
+              <this.BottomPanel />
             </div>
-            <div className="panel panel-default">
-              <div className="panel-body">
-                {this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event => this.getComments()}
-                  >
-                    Show Comments
-                  </button>
-                )}
-                {!this.state.isHidden.comments && (
-                  <button
-                    className="btn btn-lg btn-block btn-primary"
-                    onClick={event =>
-                      this.setState({ isHidden: { comments: true } })
-                    }
-                  >
-                    Hide Comments
-                  </button>
-                )}
-              </div>
-            </div>
+            <this.CommentButton />
             {!this.state.isHidden.comments && <this.ShowComments />}
           </div>
         );

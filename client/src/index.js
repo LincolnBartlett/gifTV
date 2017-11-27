@@ -13,7 +13,7 @@ class App extends Component {
     super(props);
     this.nextPage = this.nextPage.bind(this);
     this.state = {
-      text: "physicsgifs",
+      text: "BetterEveryLoop",
       posts: []
     };
   }
