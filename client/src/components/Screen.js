@@ -32,7 +32,6 @@ class Screen extends Component {
     // console.log(nextProps.output, nextProps.list);
     if (nextProps !== this.props) {
       //if the URL needs to be changed it's done here
-      if (nextProps) {
         nextProps.list.forEach(post => {
           if (post.domain.includes("self") === true) {
             post.domain = "self";
@@ -92,7 +91,7 @@ class Screen extends Component {
               break;
           }
         });
-      }
+     
       this.setState({
         posts: nextProps.list,
         count: 0

@@ -26,8 +26,7 @@ class App extends Component {
   }
 
   changeTerm(text) {
-    this.setState({ text });
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=50&/`).then(res => {
+    axios.get(`https://www.reddit.com/r/${text}.json?limit=50&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({posts});
     });
@@ -41,8 +40,8 @@ class App extends Component {
   }
 
   render() {
-    const throttle = _.debounce(term => {
-      this.changeTerm(term);
+    const throttle = _.debounce(text => {
+      this.changeTerm(text);
     }, 500);
     return (
       <div className="container">

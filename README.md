@@ -1,6 +1,5 @@
-# gifTV
+# gifTV  [Try it out!](https://gifTV.herokuapp.com/)
 ### a Single Page GIF experience for reddit
-[Try it out!](https://gifTV.herokuapp.com/)
 ---
 
 gifTV is a simple React application that pulls JSON from subreddits and displays posts without the clutter. Currently the applicaion is read only and designed to work best with subbreddits that are focused on GIFs.
