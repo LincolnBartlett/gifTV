@@ -140,11 +140,6 @@ In the final render method of the component a switch statement determines the so
 
 ```javascript
   render() {
-    // if (this.state.posts[this.state.count].domain !== undefined) {
-    //   console.log(this.state.count, this.state.posts[this.state.count]);
-    // }
-
-    //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
 
       //Video Embed

@@ -11,25 +11,16 @@ class Screen extends Component {
     this.Video = this.Video.bind(this);
     this.Image = this.Image.bind(this);
     this.Iframe = this.Iframe.bind(this);
-    this.getComments = this.getComments.bind(this);
-    this.ShowComments = this.ShowComments.bind(this);
     this.TopPanel = this.TopPanel.bind(this);
     this.BottomPanel = this.BottomPanel.bind(this);
-    this.CommentButton = this.CommentButton.bind(this);
 
     this.state = {
       posts: [{ selftext: "" }],
       count: 0,
-      comments: [],
-      isHidden: {
-        comments: true
-      }
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ isHidden: { comments: true } });
-    // console.log(nextProps.output, nextProps.list);
     if (nextProps !== this.props) {
       //if the URL needs to be changed it's done here
         nextProps.list.forEach(post => {
@@ -100,21 +91,6 @@ class Screen extends Component {
   }
 
   //buttons to switch between gifs by changing this.state.count
-  nextPost() {
-    let add = this.state.count;
-    if (add < this.state.posts.length) {
-      add++;
-      this.setState({ count: add, isHidden: { comments: true } });
-    }
-    if (add === this.state.posts.length) {
-      add = 0;
-      const postName = this.state.posts[this.state.posts.length - 1].name;
-      const subreddit = this.props.output;
-      this.props.nextPage(subreddit, postName);
-      this.setState({ count: add, isHidden: { comments: true } });
-    }
-  }
-
   lastPost() {
     let sub = this.state.count;
     if (sub > 0) {
@@ -128,8 +104,22 @@ class Screen extends Component {
     }
   }
 
-  //Component rendering functions
+  nextPost() {
+    let add = this.state.count;
+    if (add < this.state.posts.length) {
+      add++;
+      this.setState({ count: add });
+    }
+    if (add === this.state.posts.length) {
+      add = 0;
+      const postName = this.state.posts[this.state.posts.length - 1].name;
+      const subreddit = this.state.posts[this.state.posts.length - 1].subreddit;
+      this.props.changeTerm(subreddit, postName);
+      this.setState({ count: add });
+    }
+  }
 
+  //Component rendering functions
   TopPanel(){
     return (
       <div className="panel-heading">
@@ -216,112 +206,8 @@ class Screen extends Component {
     );
   }
 
-  // Comment handling
-
-  getComments() {
-    axios
-      .get(
-        `https://www.reddit.com/r/${this.props.output}/comments/${
-          this.state.posts[this.state.count].id
-        }/.json`
-      )
-      .then(res => {
-        const comments = res.data[1].data.children.map(obj => obj.data);
-        this.setState({ comments });
-      })
-      .then(() => {
-        this.setState({ isHidden: { comments: false } });
-        this.ShowComments();
-      });
-  }
-
-  CommentButton(){
-    return(
-      <div className="panel panel-default">
-        <div className="panel-body">
-          {this.state.isHidden.comments && (
-            <button
-              className="btn btn-lg btn-block btn-primary"
-              onClick={event => this.getComments()}
-            >
-              Show Comments
-            </button>
-          )}
-          {!this.state.isHidden.comments && (
-            <button
-              className="btn btn-lg btn-block btn-primary"
-              onClick={event =>
-                this.setState({ isHidden: { comments: true } })
-              }
-            >
-              Hide Comments
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  ShowComments() {
-    const posts = this.state.comments.map(post => {
-      let child = <div />;
-      let child2 = <div />;
-      if (post.replies) {
-        child = post.replies.data.children.map(childPost => {
-          if (childPost.data.replies) {
-            child2 = childPost.data.replies.data.children.map(child2Post => {
-              return (
-                <div className="panel panel-default">
-                  <div key={child2Post.data.id} className="panel-body">
-                    <p>
-                      {child2Post.data.score} u/{child2Post.data.author}:
-                    </p>
-                    <hr />
-                    <ReactMarkdown source={child2Post.data.body} />
-                  </div>
-                </div>
-              );
-            });
-          }
-          return (
-            <div className="panel panel-default">
-              <div key={childPost.data.id} className="panel-body">
-                <p>
-                  {childPost.data.score} u/{childPost.data.author}:
-                </p>
-                <hr />
-                <ReactMarkdown source={childPost.data.body} />
-                <br />
-                <div>{child2}</div>
-              </div>
-            </div>
-          );
-        });
-      }
-
-      return (
-        <div className="panel panel-default">
-          <div key={post.id} className="panel-body">
-            <p>
-              {post.score} u/{post.author}:
-            </p>
-            <hr />
-            <ReactMarkdown source={post.body} />
-            <br />
-            <div>{child}</div>
-          </div>
-        </div>
-      );
-    });
-
-    return <div>{posts}</div>;
-  }
 
   render() {
-    // if (this.state.posts[this.state.count].domain !== undefined) {
-    //   console.log(this.state.count, this.state.posts[this.state.count]);
-    // }
-
     //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
 
@@ -330,11 +216,7 @@ class Screen extends Component {
       case "giant.gfycat.com":
       case "v.redd.it":
         return (
-          <div>
-            <this.Video />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Video />
         );
 
       //Image Embed
@@ -343,11 +225,7 @@ class Screen extends Component {
       case "gph.is":
       case "media.giphy.com":
         return (
-          <div>
-            <this.Image />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Image />
         );
 
       //iFrame Embed
@@ -357,50 +235,37 @@ class Screen extends Component {
       case "gfycat.com":
       case "giphy.com":
         return (
-          <div>
-            <this.Iframe />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Iframe />
         );
 
       case "self":
         return (
-          <div>
-            <div className="panel panel-default">
-                <this.TopPanel />        
-                <div className="panel-body">
-                  <ReactMarkdown
-                    source={this.state.posts[this.state.count].selftext}
-                  />
-                </div>
-                <this.BottomPanel />
-              
-            </div>
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
+          <div className="panel panel-default">
+              <this.TopPanel />        
+              <div className="panel-body">
+                <ReactMarkdown
+                  source={this.state.posts[this.state.count].selftext}
+                />
+              </div>
+              <this.BottomPanel />
           </div>
         );
 
       default:
-        return (
-          <div>
-            <div className="panel panel-default">
-              <this.TopPanel />
-                <div className="panel-body">
-                  Sorry source not supported
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <img
-                      className="fit-image"
-                      src={this.state.posts[this.state.count].thumbnail}
-                      alt="gifTV"
-                    />
-                  </div>
+        return ( 
+          <div className="panel panel-default">
+            <this.TopPanel />
+              <div className="panel-body">
+                Sorry source not supported
+                <div className="embed-responsive embed-responsive-4by3">
+                  <img
+                    className="fit-image"
+                    src={this.state.posts[this.state.count].thumbnail}
+                    alt="gifTV"
+                  />
                 </div>
-              <this.BottomPanel />
-            </div>
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
+              </div>
+            <this.BottomPanel />
           </div>
         );
     }

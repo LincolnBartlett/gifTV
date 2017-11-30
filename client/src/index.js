@@ -11,28 +11,17 @@ import Remote from "./components/Remote";
 class App extends Component {
   constructor(props) {
     super(props);
-    this.nextPage = this.nextPage.bind(this);
+    this.changeTerm = this.changeTerm.bind(this);
     this.state = {
-      text: "BetterEveryLoop",
       posts: []
     };
   }
 
   componentDidMount() {
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=50&/`).then(res => {
-      const posts = res.data.data.children.map(obj => obj.data);
-      this.setState({posts});
-    });
+    this.changeTerm('densegifs');
   }
 
-  changeTerm(text) {
-    axios.get(`https://www.reddit.com/r/${text}.json?limit=50&/`).then(res => {
-      const posts = res.data.data.children.map(obj => obj.data);
-      this.setState({posts});
-    });
-  }
-
-  nextPage(subreddit, postname){
+  changeTerm(subreddit, postname = ""){
     axios.get(`https://www.reddit.com/r/${subreddit}.json?limit=50&after=${postname}&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
@@ -46,18 +35,17 @@ class App extends Component {
     return (
       <div className="container">
         <div className="row">
-        <br />
-        <div className="col-lg-8">
-        <Screen
-          output={this.state.text}
-          list={this.state.posts} 
-          nextPage={this.nextPage}/>
+          <br />
+          <div className="col-lg-8">
+            <Screen
+              list={this.state.posts} 
+             changeTerm={this.changeTerm}/>
           </div>
           <div className="col-lg-4">
-        <Remote          
-          onSearchTermChange={throttle}/>
+            <Remote          
+              onSearchTermChange={throttle}/>
           </div>
-        </div>
+        </div>  
       </div>
     );
   }
