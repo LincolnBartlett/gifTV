@@ -43,7 +43,7 @@ class App extends Component {
           </div>
           <div className="col-lg-4">
             <Remote          
-              onSearchTermChange={throttle}/>
+              changeTerm={throttle}/>
           </div>
         </div>  
       </div>

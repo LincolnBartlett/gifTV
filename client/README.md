@@ -9,65 +9,31 @@ The client was developed using Create-React-App.
 
 ## index.js
 
-Inside index.js is the top level component for the application called App. It’s where the initial GET request is made to reddit for a subreddit’s JSON information. When the application first loads we call componentDidMount() and make the request with axios. 
+index.js contains the top level component for the application called App. It’s where GET requests are made to reddit for a subreddit’s JSON information with [axios](https://github.com/axios/axios). We do so with the function changeTerm()
 
 ```javascript
-  componentDidMount() {
-    axios.get(`https://www.reddit.com/r/${this.state.text}.json?limit=50&/`).then(res => {
-      const posts = res.data.data.children.map(obj => obj.data);
-      this.setState({posts});
-    });
-  }
-```
-
-The component's state was initilized with:
-```javascript
-    this.state = {
-      text: "BetterEveryLoop",
-      posts: []
-    };
-```
-When the component mounts it defaults to /r/BetterEveryLoop and maps the posts into the state.posts array. The array of posts is then sent as a property to the Screen component where the rendering of posts is handled.
-
-```javascript
-        <Screen
-          output={this.state.text}
-          list={this.state.posts} 
-          nextPage={this.nextPage}/>
-```
-
-If the user changes the subreddit (either by clicking a button on the Remote or changing the term in the input field) changeTerm() is called.
-changeTerm() is functionally identical to componentDidMount, however it takes the new term as an argument and passes it into the axios request.
-```javascript
-  changeTerm(text) {
-    axios.get(`https://www.reddit.com/r/${text}.json?limit=50&/`).then(res => {
-      const posts = res.data.data.children.map(obj => obj.data);
-      this.setState({posts});
-    });
-  }
-```
-
-If a user has reached the end of the posts contained in the state.posts array the Screen component will call nextPage() pass it two arguments, subreddit (the title of the subreddit) and postname (the title of the last post in the array) which then will gather JSON information about the next 50 posts in the subreddit after the last post.
-```javascript
-  nextPage(subreddit, postname){
+  changeTerm(subreddit, postname = ""){
     axios.get(`https://www.reddit.com/r/${subreddit}.json?limit=50&after=${postname}&/`).then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       this.setState({ posts });
     });
   }
 ```
+changeTerm() takes two arguments. The first is the name of the subreddit and the second is the name of an indivdual reddit post. The second argument allows us to gather post data from reddit after a specific post. This will come in handy once a user has cycled through the array of posts. If there is no second argument when the function is called the argument defaults to an empty string.
+
+
 
 ## src/Screen.js
 
 
-The Screen component is responsible for rendering the actual post from reddit. The posts are stored in the component's state and displayed one at at time. Before any rendering is done, the properties sent to the Screen component are filtered through a switch statement that will modify a post's url to conform to one of the three render methods; Video, Image or iFrame if needed. This is done because of the wide variety of sources that reddit posts can come from. 
+The Screen component is responsible for rendering the actual post from reddit. The posts are passed to Screen from App as properties and stored in the Screen's state to be displayed one at at time. Before any rendering is done, the properties sent to the Screen component are filtered through a switch statement that will modify a post's url to conform to one of the three render methods: Video, Image or iFrame (if needed). This is done because of the wide variety of sources that reddit posts can come from. 
 
-To do this we call componentWillReceiveProps() because it will be called in the component's life cycle before rendering to the screen and make any necessary changes.
+To do this we call componentWillReceiveProps() so that it will be called in the component's life cycle before rendering to the screen. We make any necessary changes and put the amended array in Screen's state.
 
 ```javascript
  componentWillReceiveProps(nextProps) {
-    this.setState({ isHidden: { comments: true } });
     if (nextProps !== this.props) {
+      //if the URL needs to be changed it's done here
         nextProps.list.forEach(post => {
           if (post.domain.includes("self") === true) {
             post.domain = "self";
@@ -135,11 +101,11 @@ To do this we call componentWillReceiveProps() because it will be called in the 
     }
   }
 ```
-
-In the final render method of the component a switch statement determines the source of the post by checking the post.domain property. From here it is rendered either as a Video, Image or iFrame.
+Once this is done the component renders our JSX to the screen. To do so it finds the appropriate post by selecting it within the posts array according to the value of state.count. It then determines the source of the post by checking the post's domain property and returns the proper render method.
 
 ```javascript
   render() {
+    //switch between content provider and return proper JSX
     switch (this.state.posts[this.state.count].domain) {
 
       //Video Embed
@@ -147,11 +113,7 @@ In the final render method of the component a switch statement determines the so
       case "giant.gfycat.com":
       case "v.redd.it":
         return (
-          <div>
-            <this.Video />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Video />
         );
 
       //Image Embed
@@ -160,11 +122,7 @@ In the final render method of the component a switch statement determines the so
       case "gph.is":
       case "media.giphy.com":
         return (
-          <div>
-            <this.Image />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Image />
         );
 
       //iFrame Embed
@@ -174,58 +132,44 @@ In the final render method of the component a switch statement determines the so
       case "gfycat.com":
       case "giphy.com":
         return (
-          <div>
-            <this.Iframe />
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
-          </div>
+          <this.Iframe />
         );
 
       case "self":
         return (
-          <div>
-            <div className="panel panel-default">
-                <this.TopPanel />        
-                <div className="panel-body">
-                  <ReactMarkdown
-                    source={this.state.posts[this.state.count].selftext}
-                  />
-                </div>
-                <this.BottomPanel />
-              
-            </div>
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
+          <div className="panel panel-default">
+              <this.TopPanel />        
+              <div className="panel-body">
+                <ReactMarkdown
+                  source={this.state.posts[this.state.count].selftext}
+                />
+              </div>
+              <this.BottomPanel />
           </div>
         );
 
       default:
-        return (
-          <div>
-            <div className="panel panel-default">
-              <this.TopPanel />
-                <div className="panel-body">
-                  Sorry source not supported
-                  <div className="embed-responsive embed-responsive-4by3">
-                    <img
-                      className="fit-image"
-                      src={this.state.posts[this.state.count].thumbnail}
-                      alt="gifTV"
-                    />
-                  </div>
+        return ( 
+          <div className="panel panel-default">
+            <this.TopPanel />
+              <div className="panel-body">
+                Sorry source not supported
+                <div className="embed-responsive embed-responsive-4by3">
+                  <img
+                    className="fit-image"
+                    src={this.state.posts[this.state.count].thumbnail}
+                    alt="gifTV"
+                  />
                 </div>
-              <this.BottomPanel />
-            </div>
-            <this.CommentButton />
-            {!this.state.isHidden.comments && <this.ShowComments />}
+              </div>
+            <this.BottomPanel />
           </div>
         );
     }
   }
-}
 ```
 
-The three different render methods are defined as functions within the component
+The three render methods (Video, Image, iFrame) are built within functions bound to the component.
 
 ```javascript
   TopPanel(){
@@ -316,22 +260,8 @@ The three different render methods are defined as functions within the component
   ```
 
   Cycling through posts is done by changing the value of state.count which is done with the fucntions nextPost() and lastPost().
-  ```javascript
-    nextPost() {
-    let add = this.state.count;
-    if (add < this.state.posts.length) {
-      add++;
-      this.setState({ count: add, isHidden: { comments: true } });
-    }
-    if (add === this.state.posts.length) {
-      add = 0;
-      const postName = this.state.posts[this.state.posts.length - 1].name;
-      const subreddit = this.props.output;
-      this.props.nextPage(subreddit, postName);
-      this.setState({ count: add, isHidden: { comments: true } });
-    }
-  }
 
+  ```javascript
   lastPost() {
     let sub = this.state.count;
     if (sub > 0) {
@@ -344,8 +274,45 @@ The three different render methods are defined as functions within the component
       this.setState({ count: sub, isHidden: { comments: true } });
     }
   }
+
+  nextPost() {
+    let add = this.state.count;
+    if (add < this.state.posts.length) {
+      add++;
+      this.setState({ count: add });
+    }
+    if (add === this.state.posts.length) {
+      add = 0;
+      const postName = this.state.posts[this.state.posts.length - 1].name;
+      const subreddit = this.state.posts[this.state.posts.length - 1].subreddit;
+      this.props.changeTerm(subreddit, postName);
+      this.setState({ count: add });
+    }
+  }
   ```
-These functions are passed to the Selectors component, which are simply buttons that call each function.
+These functions are passed to the Selectors component as properties. The Selectors component is a functional based component that contains buttons to call each function and is pulled in as a module.
+
+```javascript
+const Selectors = props => {
+  return (
+      <div className="col-xs-4 text-right">
+        <button onClick={event => props.lastPost()} className="btn btn-default">
+          <span
+            className="glyphicon glyphicon glyphicon-step-backward"
+            aria-hidden="true"
+          />
+        </button>
+        <button onClick={event => props.nextPost()} className="btn btn-success">
+        Next
+          <span
+            className="glyphicon glyphicon glyphicon-step-forward"
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+  );
+};
+```
 
 
 ## src/Remote.js
@@ -353,30 +320,33 @@ These functions are passed to the Selectors component, which are simply buttons 
 The Remote component handles choosing a subreddit to browse. There are two ways to choose a subreddit. Either select one from the list or type one into the the input field. The subreddits on the list are stored in the component's state as an object,
 
 ```javascript
-    this.state = {
-      term: "BetterEveryLoop",
+this.state = {
+      term: "densegifs",
       subs: {
+        funny: [
+          "funnygifs",
+          "holdmybeer",
+          "whatcouldgowrong",
+          "reactiongifs",
+          "hmmmgifs",
+          "gifextra",
+          "BetterEveryLoop",
+          "gifsthatkeepongiving",
+          "densegifs"
+        ],
         random: [
           "gif",
           "gifs",
-          "gifv",
-          "gfycats",
+          "gifrecipes",
           "InterestingGifs",
           "perfectloops",
-          "BetterEveryLoop",
           "Cinemagraphs",
-          "gifsthatkeepongiving",
-          "gifextra",
-          "reactiongifs",
           "StarTrekGifs",
-          "hero0fwar",
-          "HighlightGIFS",
-          "EditingAndLayout",
           "fullmoviegifs",
-          "gifrecipes",
           "SuperAthleteGifs",
-          "silentmoviegifs",
-          "hmmmgifs"
+          "silentmoviegifs",         
+          "GTAgifs", 
+          "GamePhysics"
         ],
         science: [
           "physicsgifs",
@@ -388,7 +358,7 @@ The Remote component handles choosing a subreddit to browse. There are two ways 
           "educationalgifs",
           "MarineBiologyGifs"
         ],
-        gaming: ["gaminggifs", "GTAgifs", "GamePhysics"],
+        
         animals: [
           "zoomies",
           "tippytaps",
@@ -400,13 +370,14 @@ The Remote component handles choosing a subreddit to browse. There are two ways 
       },
       isHidden: {
         Random: true,
-        Science: false,
-        Gaming: true,
+        Science: true,
+        Funny: true,
         Animals: true
       }
     };
+  }
 ```
-The component renders each group of subreddits by rendering the Buttons component within a function
+Remote renders each group of subreddits by returning the Buttons component with the proper list of subreddits attached to properties.
 
 ```javascript
   Random() {
@@ -421,9 +392,9 @@ The component renders each group of subreddits by rendering the Buttons componen
     );
   }
 
-  Gaming() {
+  Funny() {
     return (
-      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.gaming} />
+      <Buttons buttonClick={this.buttonClick} sub={this.state.subs.funny} />
     );
   }
 
@@ -434,7 +405,26 @@ The component renders each group of subreddits by rendering the Buttons componen
   }
   ```
 
-  The Buttons component maps each value to its own button and renders them as a list. In the final render method each group of subreddits is assigned to a button which toggles it's respective isHidden property value located on the component's state. The isHidden property will then show or not show the group of buttons depneding on it's boolean value.
+  The Buttons component is a functional based component pulled in as a module that maps each value passed to it's properties to a button and renders each button in a list.
+  
+  ```javascript
+  const Buttons = props => {
+  const subButtons = props.sub.map(sub => {
+    return (
+        <button
+            className="btn btn-xs btn-block btn-default"
+            key={sub}
+            onClick={event => props.buttonClick(sub)}
+        >
+            /r/{sub}
+        </button> 
+    );
+  });
+  return <div>{subButtons}</div>;
+};
+```
+  
+In the final render method each group of subreddits is assigned to a button which toggles it's respective isHidden property value located on the component's state. If a group of button's value is set to false, the group will be rendered to the screen.
 
   ```javascript
     render() {
@@ -514,6 +504,23 @@ The component renders each group of subreddits by rendering the Buttons componen
         </div>
       </div>
     );
+  }
+```
+
+If a user types in a custom subreddit in the input field the text is sent to the function onInputChange() as an argument where is then passed through as an argument to the property changeTerm() which is given to Remote from the App component.
+
+```javascript
+  onInputChange(term) {
+    this.setState({ term });
+    this.props.changeTerm(term);
+  }
+```
+
+Similarly if a user clicks one of the subreddit buttons listed the function buttonClick() is called which passes the button's text onto onInputChange() as an argument.
+
+```javascript
+  buttonClick(term) {
+    this.onInputChange(term);
   }
 ```
 

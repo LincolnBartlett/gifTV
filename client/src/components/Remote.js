@@ -69,7 +69,7 @@ class Remote extends Component {
 
   onInputChange(term) {
     this.setState({ term });
-    this.props.onSearchTermChange(term);
+    this.props.changeTerm(term);
   }
 
   buttonClick(term) {
