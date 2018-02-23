@@ -3,7 +3,7 @@
 ---
 
 # Client
-The client was developed using Create-React-App. 
+The client was developed using [Create-React-App](https://github.com/facebookincubator/create-react-app). 
 
 ### How it works
 
